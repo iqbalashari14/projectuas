@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Halaman Login</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      justify-content: flex-end; /* Tabel/kotak login ke kanan */
+      align-items: center;
+      padding: 2rem 6%;
+      overflow: hidden;
+      background-color: #0f172a;
+    }
+
+    /* Layer foto latar belakang halaman dengan animasi muncul dari bawah */
+    .bg-photo {
+      position: fixed;
+      inset: 0;
+      background-image: url("login.avif");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: -2;
+      animation: munculDariBawah 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* Lapisan halus agar teks tetap terbaca di atas foto */
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        to left,
+        rgba(15, 23, 42, 0.5) 0%,
+        rgba(15, 23, 42, 0.22) 60%,
+        rgba(15, 23, 42, 0.12) 100%
+      );
+      z-index: -1;
+    }
+
+    @keyframes munculDariBawah {
+      0% {
+        opacity: 0;
+        transform: translateY(80px) scale(1.04);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Kotak/tabel login efek blur menyatu dengan background */
+    .login-container {
+      position: relative;
+      overflow: hidden;
+      background-image:
+        linear-gradient(
+          160deg,
+          rgba(15, 23, 42, 0.45),
+          rgba(15, 23, 42, 0.28)
+        ),
+        url("bg-login.avif");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      backdrop-filter: blur(18px) saturate(140%);
+      padding: 40px 35px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+      width: 100%;
+      max-width: 390px;
+    }
+
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 24px;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+      font-size: 24px;
+    }
+
+    .input-group {
+      margin-bottom: 18px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: #f8fafc;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* Kolom pengisian hitam agar jelas terbaca di HP maupun laptop */
+    .input-group input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      border-radius: 8px;
+      font-size: 16px;
+      color: #ffffff;
+      background-color: rgba(15, 23, 42, 0.88);
+      transition: border-color 0.25s, box-shadow 0.25s, background-color 0.25s;
+    }
+
+    .input-group input::placeholder {
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    .input-group input:focus {
+      outline: none;
+      background-color: #090d16;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background-color: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.25s;
+      margin-top: 8px;
+    }
+
+    .btn-login:hover {
+      background-color: #1d4ed8;
+    }
+
+    .error-msg {
+      color: #fecaca;
+      background-color: rgba(185, 28, 28, 0.72);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 12px;
+      display: none;
+      font-weight: 600;
+    }
+
+    .hint {
+      text-align: center;
+      font-size: 12px;
+      color: rgba(248, 250, 252, 0.88);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+      margin-top: 16px;
+    }
+
+    /* Pop-up Berhasil Login */
+    .popup-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(6px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      z-index: 999;
+    }
+
+    .popup-overlay.show {
+      display: flex;
+    }
+
+    .popup-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 380px;
+      border-radius: 16px;
+      padding: 1.85rem 1.6rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+      text-align: center;
+      animation: popupMasuk 0.22s ease-out;
+    }
+
+    @keyframes popupMasuk {
+      from {
+        opacity: 0;
+        transform: scale(0.92) translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .popup-icon {
+      width: 54px;
+      height: 54px;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      background-color: #dcfce7;
+      color: #166534;
+      font-size: 1.6rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .popup-card h3 {
+      font-size: 1.25rem;
+      color: #0f172a;
+      margin-bottom: 0.4rem;
+    }
+
+    .popup-card p {
+      font-size: 0.92rem;
+      color: #475569;
+      margin-bottom: 1.35rem;
+    }
+
+    .btn-continue {
+      width: 100%;
+      padding: 0.78rem 1rem;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: #ffffff;
+      background-color: #2563eb;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-continue:hover {
+      background-color: #1d4ed8;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        justify-content: center;
+        padding: 1.5rem;
+      }
+
+      .login-container {
+        padding: 32px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-photo" aria-hidden="true"></div>
+  <div class="bg-overlay" aria-hidden="true"></div>
+
+  <div class="login-container">
+    <h2>Welcome Sobat Piooners</h2>
+    <form id="loginForm">
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Masukkan username" required />
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Masukkan password" required />
+      </div>
+      <button type="submit" class="btn-login">Masuk</button>
+      <p class="error-msg" id="errorMsg">Username atau password salah!</p>
+    </form>
+    <p class="hint">Gunakan user: <strong>piooners</strong> | pass: <strong>123</strong></p>
+  </div>
+
+  <!-- Pop-up Setelah Berhasil Login -->
+  <div id="loginSuccessPopup" class="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="loginPopupTitle">
+    <div class="popup-card">
+      <div class="popup-icon">✓</div>
+      <h3 id="loginPopupTitle">Login Berhasil!</h3>
+      <p id="loginPopupText">Halo, piooners! Selamat datang kembali.</p>
+      <button type="button" id="continueBtn" class="btn-continue">Silahkan masuk</button>
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById("loginForm");
+    const errorMsg = document.getElementById("errorMsg");
+    const successPopup = document.getElementById("loginSuccessPopup");
+    const popupText = document.getElementById("loginPopupText");
+    const continueBtn = document.getElementById("continueBtn");
+
+    function goToBeranda() {
+      window.location.href = "beranda.html";
+    }
+
+    loginForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const user = document.getElementById("username").value.trim();
+      const pass = document.getElementById("password").value;
+
+      if (user === "piooners" && pass === "123") {
+        errorMsg.style.display = "none";
+        popupText.textContent = `Halo sobat ${user}! Login berhasil, silakan lanjut ke beranda.`;
+        successPopup.classList.add("show");
+      } else {
+        errorMsg.style.display = "block";
+      }
+    });
+
+    continueBtn.addEventListener("click", goToBeranda);
+  </script>
+
+</body>
+</html>
